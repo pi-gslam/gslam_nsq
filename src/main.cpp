@@ -44,7 +44,7 @@ public:
         });
 
         if (!lookupd_http_url.empty()) {
-            _client.ConnectToLookupds(lookupd_http_url);
+            _client.ConnectToLookupds(lookupd_http_url+"/lookup?topic="+gslam_sub.getTopic());
         } else {
             _client.ConnectToNSQDs(nsqd_tcp_addr);
         }
@@ -82,7 +82,7 @@ public:
         });
 
         if (!lookupd_http_url.empty()) {
-            _client.ConnectToLookupds(lookupd_http_url);
+            _client.ConnectToLookupds(lookupd_http_url+"/lookup?topic="+gslam_pub.getTopic());
         } else {
             _client.ConnectToNSQDs(nsqd_tcp_addr);
         }
@@ -163,10 +163,6 @@ int run_nsq(Svar config){
     for(Subscriber sub:messenger.getSubscribers()){
         newsub_func(sub);
     }
-
-    GSLAM::Subscriber sub_test=messenger.subscribe("nsq.quit",[](Svar msg){
-        messenger.publish("messenger/stop",true);
-    });
 
     Subscriber subStop=messenger.subscribe("messenger/stop",0,[&](bool b){
         LOG(INFO)<<"Try stop loop";
